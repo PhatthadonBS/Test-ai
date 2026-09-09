@@ -86,7 +86,16 @@ app.post('/api/analyze', async (req, res) => {
         const prompt = `
         คุณคือแพทย์และผู้เชี่ยวชาญด้านสมุนไพรไทย จงประเมินอาการและแนะนำสมุนไพร/การรักษา โดยอิงจาก "ข้อมูลอ้างอิงทางการแพทย์" ด้านล่างนี้เป็นหลัก
         เนื่องจากข้อมูลอ้างอิงอาจใช้คำศัพท์แพทย์แผนไทย (เช่น ลม, เสมหะ, กำเดา, ธาตุ) โปรดพยายามเทียบเคียงอาการปัจจุบันของคนไข้ (เช่น ปวดหัว, มีไข้, ท้องเสีย) กับสรรพคุณในเอกสารให้ดีที่สุด
-        หากไม่พบสมุนไพรที่เกี่ยวข้องเลยจริงๆ ให้ตอบว่า "ไม่พบข้อมูลที่ตรงกับอาการ แนะนำให้พบแพทย์"
+        
+        ข้อบังคับสำคัญ: คุณต้องตอบกลับเป็นข้อมูลรูปแบบ JSON เท่านั้น โดยมีโครงสร้างดังนี้:
+        {
+          "summary": "สรุปอาการป่วยเบื้องต้น",
+          "recommendation": "ยา/สมุนไพรที่แนะนำตัวที่ดีที่สุด (อิงจากเอกสาร)",
+          "usage": "ข้อมูลการใช้/วิธีรับประทาน",
+          "precautions": "ข้อควรระวัง/ผลข้างเคียง",
+          "self_care": "ข้อแนะนำการดูแลตัวเองเพิ่มเติม"
+        }
+        หากไม่พบสมุนไพรที่เกี่ยวข้องเลยจริงๆ ให้ใส่ในฟิลด์ recommendation ว่า "ไม่พบข้อมูลสมุนไพรที่ตรงกับอาการ แนะนำให้พบแพทย์"
 
         --- ข้อมูลอ้างอิงทางการแพทย์ (สมุนไพร) ---
         ${knowledgeBase}
@@ -107,13 +116,29 @@ app.post('/api/analyze', async (req, res) => {
             model: 'gemini-3.6-flash',
             contents: prompt,
             config: {
-                temperature: 0.1, 
+                temperature: 0.1,
+                responseMimeType: "application/json"
             }
         });
 
+        // แปลงข้อความ JSON ที่ได้จาก AI เป็น Object 
+        let aiResult = {};
+        try {
+            aiResult = JSON.parse(response.text);
+        } catch (e) {
+            console.error("Failed to parse JSON:", response.text);
+            aiResult = {
+                summary: "เกิดข้อผิดพลาดในการอ่านผลลัพธ์",
+                recommendation: "-",
+                usage: "-",
+                precautions: "-",
+                self_care: "-"
+            };
+        }
+
         res.json({
             success: true,
-            analysis: response.text,
+            analysis: aiResult,
             sources_used: "Direct Knowledge Base Match"
         });
 

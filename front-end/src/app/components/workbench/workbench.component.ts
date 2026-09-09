@@ -22,7 +22,7 @@ export class WorkbenchComponent {
     symptoms: ''
   };
 
-  aiResponse: string = '';
+  aiResponse: any = null;
   loading: boolean = false;
   showModal: boolean = false;
 
@@ -36,7 +36,7 @@ export class WorkbenchComponent {
     
     this.loading = true;
     this.showModal = true;
-    this.aiResponse = '';
+    this.aiResponse = null;
 
     this.apiService.analyze(this.patient).subscribe({
       next: (res) => {
@@ -44,7 +44,13 @@ export class WorkbenchComponent {
         this.loading = false;
       },
       error: (err) => {
-        this.aiResponse = 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI หรือ API: ' + err.message;
+        this.aiResponse = {
+          summary: 'เกิดข้อผิดพลาด',
+          recommendation: 'ไม่สามารถติดต่อ AI ได้',
+          usage: '-',
+          precautions: '-',
+          self_care: err.message
+        };
         this.loading = false;
       }
     });

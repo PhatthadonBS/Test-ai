@@ -89,8 +89,63 @@
         <div class="spinner"></div>
         <p>กำลังค้นหาฐานข้อมูลและประมวลผลข้อมูลคนไข้...</p>
       </div>
-      <div *ngIf="!loading" class="ai-response">
-        {{ aiResponse }}
+      <div *ngIf="!loading && aiResponse" class="ai-response-grid">
+        
+        <!-- Summary Card -->
+        <div class="response-card card-summary">
+          <div class="card-header">
+            <span class="icon">🩺</span>
+            <h4>สรุปอาการป่วย</h4>
+          </div>
+          <div class="card-body">
+            <p>{{ aiResponse.summary }}</p>
+          </div>
+        </div>
+
+        <!-- Recommendation Card -->
+        <div class="response-card card-recommendation">
+          <div class="card-header">
+            <span class="icon">🌿</span>
+            <h4>ยา/สมุนไพรที่แนะนำ</h4>
+          </div>
+          <div class="card-body">
+            <p>{{ aiResponse.recommendation }}</p>
+          </div>
+        </div>
+
+        <!-- Usage Card -->
+        <div class="response-card card-usage">
+          <div class="card-header">
+            <span class="icon">📋</span>
+            <h4>ข้อมูลการใช้</h4>
+          </div>
+          <div class="card-body">
+            <p>{{ aiResponse.usage }}</p>
+          </div>
+        </div>
+
+        <!-- Precautions Card -->
+        <div class="response-card card-precautions">
+          <div class="card-header">
+            <span class="icon">⚠️</span>
+            <h4>ข้อควรระวัง</h4>
+          </div>
+          <div class="card-body">
+            <p>{{ aiResponse.precautions }}</p>
+          </div>
+        </div>
+
+        <!-- Self Care Card -->
+        <div class="response-card card-selfcare">
+          <div class="card-header">
+            <span class="icon">💡</span>
+            <h4>ข้อแนะนำการดูแลตัวเองเพิ่มเติม</h4>
+          </div>
+          <div class="card-body">
+            <p>{{ aiResponse.self_care }}</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
