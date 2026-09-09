@@ -1,0 +1,97 @@
+<div class="workbench-container">
+  <div class="header">
+    <h2>บันทึกข้อมูลซักประวัติ (Patient Intake)</h2>
+    <p>Please enter the patient's vitals and symptoms for AI analysis.</p>
+  </div>
+
+  <div class="form-grid">
+    <!-- Demographics -->
+    <div class="form-section">
+      <h3>ข้อมูลทั่วไป</h3>
+      <div class="input-group">
+        <label>ชื่อผู้ป่วย (Name)</label>
+        <input type="text" [(ngModel)]="patient.name" placeholder="ระบุชื่อ-นามสกุล">
+      </div>
+      <div class="input-group">
+        <label>ประวัติแพ้ยา (Allergies)</label>
+        <input type="text" [(ngModel)]="patient.allergies" placeholder="เช่น Penicillin (ถ้าไม่มีให้เว้นว่าง)">
+      </div>
+    </div>
+
+    <!-- Vitals -->
+    <div class="form-section">
+      <h3>สัญญาณชีพ (Vital Signs)</h3>
+      <div class="vitals-row">
+        <div class="input-group">
+          <label>น้ำหนัก (kg)</label>
+          <input type="number" [(ngModel)]="patient.weight" placeholder="0.0">
+        </div>
+        <div class="input-group">
+          <label>ส่วนสูง (cm)</label>
+          <input type="number" [(ngModel)]="patient.height" placeholder="0">
+        </div>
+        <div class="input-group">
+          <label>อุณหภูมิ (°C)</label>
+          <input type="number" [(ngModel)]="patient.temperature" placeholder="36.5">
+        </div>
+      </div>
+    </div>
+
+    <!-- Screening -->
+    <div class="form-section">
+      <h3>การคัดกรองเบื้องต้น (Screening)</h3>
+      <div class="screening-row">
+        <div class="input-group">
+          <label>การสูบบุหรี่ (Smoking)</label>
+          <select [(ngModel)]="patient.smoking">
+            <option value="ไม่สูบ">ไม่สูบ (Never)</option>
+            <option value="สูบนานๆ ครั้ง">สูบนานๆ ครั้ง (Occasional)</option>
+            <option value="สูบประจำ">สูบประจำ (Regular)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>การดื่มสุรา (Alcohol)</label>
+          <select [(ngModel)]="patient.alcohol">
+            <option value="ไม่ดื่ม">ไม่ดื่ม (Never)</option>
+            <option value="ดื่มนานๆ ครั้ง">ดื่มนานๆ ครั้ง (Occasional)</option>
+            <option value="ดื่มประจำ">ดื่มประจำ (Regular)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Symptoms -->
+    <div class="form-section full-width">
+      <h3>อาการป่วย (Chief Complaint) *</h3>
+      <div class="input-group">
+        <textarea [(ngModel)]="patient.symptoms" rows="3" placeholder="ระบุอาการที่พบ เช่น ปวดหัวตึบๆ มีไข้สูง ไอแห้งๆ..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn-primary" (click)="analyzePatient()" [disabled]="loading || !patient.symptoms">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      {{ loading ? 'กำลังวิเคราะห์...' : 'บันทึก & วิเคราะห์ด้วย AI' }}
+    </button>
+  </div>
+</div>
+
+<!-- AI Recommendation Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>🤖 ผลการวิเคราะห์จาก AI</h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>กำลังค้นหาฐานข้อมูลและประมวลผลข้อมูลคนไข้...</p>
+      </div>
+      <div *ngIf="!loading" class="ai-response">
+        {{ aiResponse }}
+      </div>
+    </div>
+  </div>
+</div>

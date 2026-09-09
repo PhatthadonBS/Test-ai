@@ -1,0 +1,16 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model KnowledgeDocument {
+  id        Int      @id @default(autoincrement())
+  fileName  String
+  fileType  String
+  content   String
+  createdAt DateTime @default(now())
+}
